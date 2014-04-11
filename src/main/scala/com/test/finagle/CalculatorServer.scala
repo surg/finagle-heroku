@@ -4,10 +4,11 @@ import com.twitter.util.Future
 import util.Properties
 import com.twitter.finagle.builder.ServerBuilder
 import java.net.InetSocketAddress
-import com.twitter.finagle.thrift.ThriftServerBufferedCodec
+import com.twitter.finagle.thrift.{ThriftServerFramedCodec, ThriftServerBufferedCodec}
 import org.apache.thrift.protocol.TBinaryProtocol
 import com.twitter.conversions.time._
 import com.test.finagle.CalculatorService.FutureIface
+import java.util.logging.Logger
 
 
 object CalculatorServer {
@@ -28,12 +29,13 @@ object CalculatorServer {
 
     ServerBuilder()
       .bindTo(new InetSocketAddress(port))
-      .codec(ThriftServerBufferedCodec())
+      .codec(ThriftServerFramedCodec())
       .name("ping")
       .writeCompletionTimeout(50 seconds)
       .readTimeout(50.seconds)
       .requestTimeout(30 seconds)
       .logChannelActivity(true)
+      .logger(Logger.getLogger("CalculatorServer"))
       .build(service)
   }
 }
